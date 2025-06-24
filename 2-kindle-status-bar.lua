@@ -101,9 +101,9 @@ end
 
 function ReaderFooter:updateFooterContainer()
     -- Get the L/R margins from settings
-    local margins = self.ui.document:getPageMargins()
-    if not margins then
-        margins = { left = 0, right = 0 } -- fallback
+    local margins = { left = Size.span.horizontal_default, right = Size.span.horizontal_default}
+    if self.ui.document.getPageMargins ~= nil then
+        margins = self.ui.document:getPageMargins()
     end
 
     -- Create two new margin objects using the respective values
@@ -229,10 +229,11 @@ function ReaderFooter:_updateFooterText(force_repaint, full_repaint)
     end
 
     -- Update margins in case they changed (user changed the L/R margins settings)
-    local margins = self.ui.document:getPageMargins()
-    if not margins then
-        margins = { left = 0, right = 0 } -- fallback
+    local margins = { left = Size.span.horizontal_default, right = Size.span.horizontal_default}
+    if self.ui.document.getPageMargins ~= nil then
+        margins = self.ui.document:getPageMargins()
     end
+
     local original_margins = self.left_margin_span.width + self.right_margin_span.width
     local new_margins = margins.left + margins.right
     self.dynamic_spacer.width = self.dynamic_spacer.width + original_margins - new_margins
