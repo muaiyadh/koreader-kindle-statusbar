@@ -3,7 +3,6 @@
 -- Implements custom time remaining generators and handles dynamic spacing.
 -- Developed & Tested on KOReader version 2025-05-22
 -- @author Muaiyad H.
--- @version 1.0
 
 local Blitbuffer = require("ffi/blitbuffer")
 local BottomContainer = require("ui/widget/container/bottomcontainer")
