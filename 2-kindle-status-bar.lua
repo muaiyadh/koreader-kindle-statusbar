@@ -1,7 +1,7 @@
 --- Kindle-style Status Bar Patch for KOReader
 -- Transforms the footer into a left/right justified layout similar to Kindle devices.
 -- Implements custom time remaining generators and handles dynamic spacing.
--- Developed & Tested on KOReader version 2025-05-22
+-- Developed & Tested on KOReader version 2025.10
 -- @author Muaiyad H.
 
 local Blitbuffer = require("ffi/blitbuffer")
@@ -64,7 +64,7 @@ function ReaderFooter:init()
     end
 
     self.textGeneratorMap.chapter_time_to_read = function(footer)
-        local left = footer.ui.toc:getChapterPagesLeft(footer.pageno) or footer.ui.document:getTotalPagesLeft(footer.pageno)
+        local left = footer.ui.toc:getChapterPagesLeft(footer.pageno, true) or footer.ui.document:getTotalPagesLeft(footer.pageno)
         return footer:getDataFromStatistics("", left, "Chapter")
     end
 
@@ -100,7 +100,7 @@ end
 
 function ReaderFooter:updateFooterContainer()
     -- Get the L/R margins from settings
-    local margins = { left = Size.span.horizontal_default, right = Size.span.horizontal_default}
+    local margins = { left = Size.span.horizontal_default, right = Size.span.horizontal_default, }
     if self.ui.document.getPageMargins ~= nil then
         margins = self.ui.document:getPageMargins()
     end
@@ -263,7 +263,10 @@ function ReaderFooter:getDataFromStatistics(title, pages, document_type)
     local lower_document_type = string.lower(document_type)
 
     local sec = _("N/A") -- Fallback if no reading statistics available
-    local average_time_per_page = self:getAvgTimePerPage()
+    if not (self.ui.statistics.settings.is_enabled and self.ui.statistics.avg_time and self.ui.statistics.avg_time == self.ui.statistics.avg_time) then -- not nan
+        return sec:gsub(" ", "\u{00a0}")
+    end
+    local average_time_per_page = self.ui.statistics.avg_time
     if average_time_per_page then
         local needed_time = pages * average_time_per_page  -- in seconds
         local hrs = math.floor(needed_time / 3600)
